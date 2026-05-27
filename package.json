@@ -28,7 +28,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 10.113.184.217",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
