@@ -182,6 +182,9 @@ export async function POST() {
         body_text: body?.text ?? '',
         footer_text: footer?.text ?? null,
         status: normalizeStatus(t.status),
+
+        components: t.components ?? [],
+        
         updated_at: new Date().toISOString(),
       }
 
