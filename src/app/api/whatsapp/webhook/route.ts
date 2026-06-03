@@ -652,7 +652,9 @@ async function processMessage(
   // message all exist before any step — including send_message — runs.
   // Fire-and-forget: a slow or failing automation must not block the
   // webhook's 200 OK response to Meta.
-  const inboundText = contentText ?? message.text?.body ?? ''
+  // अगर बटन दबा है तो उसका Payload ID लें, नहीं तो टाइप किया हुआ टेक्स्ट लें।
+// .toLowerCase() से सब कुछ स्मॉल लेटर्स में हो जाएगा ताकि Case Sensitivity का कोई एरर न आए।
+const inboundText = (interactiveReplyId || contentText || message.text?.body || '').toLowerCase().trim()
   const automationTriggers: (
     | 'new_contact_created'
     | 'first_inbound_message'
