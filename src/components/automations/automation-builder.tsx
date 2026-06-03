@@ -513,12 +513,12 @@ function StepRenderer({
   parentScope: ParentScope
   parentPath: StepPath
 } & Omit<StepListProps, "steps" | "parentPath">) {
-  const path: StepPath = [
-    ...parentPath,
-    parentScope.kind === "root"
-      ? { kind: "root", index }
-      : { kind: "branch", parentCid: parentScope.parentCid, branch: parentScope.branch, index },
-  ]
+  const path: StepPath = parentScope.kind === "root"
+    ? [...parentPath, { kind: "root", index }]
+    : [
+        ...parentPath.slice(0, -1),
+        { kind: "branch", parentCid: parentScope.parentCid, branch: parentScope.branch, index }
+      ]
   const meta = STEP_META[step.step_type]
   const Icon = meta.icon
   const expanded = props.expandedId === step.cid
