@@ -685,42 +685,28 @@ if (!flowConsumed || interactiveReplyId) {
       },
     }).catch((err) => console.error('[automations] dispatch failed:', err))
   }
-  // 🔥 n8n Integrated Webhook Forwarder (Best Practice)
 try {
-  // .env फाइल से URLs पढ़ें
-  const n8nWebhookUrl = process.env.NODE_ENV === 'production'
-    ? process.env.N8N_PROD_WEBHOOK_URL
-    : process.env.N8N_TEST_WEBHOOK_URL;
-  
-  // URL मौजूद है या नहीं, यह चेक करें
-  if (!n8nWebhookUrl) {
-    throw new Error('n8n Webhook URL is missing in environment variables!');
+    const n8nWebhookUrl = process.env.NODE_ENV === 'production'
+      ? process.env.N8N_PROD_WEBHOOK_URL
+      : process.env.N8N_TEST_WEBHOOK_URL;
+    
+    if (n8nWebhookUrl) {
+      // 🔥 FIX: 'await' लगाना ज़रूरी है ताकि सर्वर इसे बीच में न रोक दे
+      await fetch(n8nWebhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: "wacrm",
+          messageText: inboundText,
+          buttonId: interactiveReplyId ?? null,
+          phone: senderPhone
+        })
+      });
+      console.log("n8n me data successfully chala gaya!");
+    }
+  } catch (err) {
+    console.error("n8n send error:", err);
   }
-
-  // Fire-and-forget fetch
-  void fetch(n8nWebhookUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      source: "wacrm",
-      userId,
-      contactId: contactRecord.id,
-      phone: senderPhone,
-      contactName: contactName,
-      messageText: inboundText,
-      buttonId: interactiveReplyId ?? null,
-      conversationId: conversation.id,
-      timestamp: message.timestamp
-    })
-  }).then((res) => {
-    if (!res.ok) console.warn('[n8n] Forwarding responded with error status:', res.status)
-  }).catch((err) => {
-    console.error('[n8n] Network error while forwarding:', err)
-  })
-
-} catch (n8nErr) {
-  console.error("[n8n] Setup failed:", n8nErr)
-}
 }
 
 async function parseMessageContent(
