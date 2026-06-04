@@ -663,9 +663,9 @@ const inboundText = (interactiveReplyId || contentText || message.text?.body || 
   )[] = []
   // Content-level triggers are suppressed when a flow consumed the
   // message — see the comment block above.
-  if (!flowConsumed) {
-    automationTriggers.push('new_message_received', 'keyword_match')
-  }
+if (!flowConsumed || interactiveReplyId) {
+  automationTriggers.push('new_message_received', 'keyword_match')
+}
   // new_contact_created fires only when the webhook just auto-created the
   // contact row. first_inbound_message fires whenever this is the contact's
   // first-ever customer-sent message — a superset that also catches
